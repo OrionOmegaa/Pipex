@@ -68,8 +68,7 @@ int	main(int argc, char **argv, char **env)
 		data.i = 2;
 	while (data.i++ < 4)
 		data.j = do_pipe(env, argv);
-	while (data.j++ < data.i)
+	while (data.j++ < data.i && \
+			waitpid(data.pid, &data.status, WUNTRACED) != -1)
 		wait(&data.status);
-	/*while(waitpid(-1, &data.status, WUNTRACED) != -1)
-		continue;*/
 }

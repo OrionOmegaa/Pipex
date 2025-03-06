@@ -60,7 +60,7 @@ char	*my_getenv(char *name, char **env)
 		while (env[i][j] && env[i][j] != '=')
 			j++;
 		sub = ft_substr(env[i], 0, j);
-		if (ft_strncmp(sub, name, 50) == 0)
+		if (ft_strncmp(sub, name, 100) == 0)
 		{
 			free(sub);
 			return (env[i] + j + 1);
