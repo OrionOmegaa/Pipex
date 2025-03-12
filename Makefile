@@ -42,6 +42,7 @@ BOX_BOT = \\===============/
 $(NAME): $(OBJS) $(LIBFT)
 	@echo "$(RED)Making Pipex ...$(RESET)"
 	@cc $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT)
+	@touch infile
 	@echo "$(GREEN)Pipex Done Succesfully !$(RESET)"
 	@echo "$(CYAN)$(BOX_TOP) $(RESET)"
 	@echo "$(CYAN)$(BOX_MID)$(RESET)$(GREEN)Executable Done$(RESET)$(CYAN)$(BOX_MID_END)$(RESET)"
@@ -50,6 +51,7 @@ $(NAME): $(OBJS) $(LIBFT)
 $(BONUS_NAME): $(BOBJ) $(LIBFT)
 	@echo "$(RED)Making Pipex ...$(RESET)"
 	@cc $(CFLAGS) -o $(BONUS_NAME) $(BOBJ) $(LIBFT)
+	@touch infile
 	@echo "$(GREEN)Bonus Pipex Done Succesfully !$(RESET)"
 	@echo "$(CYAN)$(BOX_TOP) $(RESET)"
 	@echo "$(CYAN)$(BOX_MID)$(RESET)$(GREEN)Executable Done$(RESET)$(CYAN)$(BOX_MID_END)$(RESET)"
@@ -74,6 +76,7 @@ clean:
 fclean: clean
 	@echo "$(RED)Full Clean in progress ...$(RESET)"
 	@rm -f $(NAME) $(BOBJ) $(BONUS_NAME)
+	@rm -f infile outfile
 	@make fclean -C ./includes/libft --no-print-directory
 	@echo "$(GREEN)FCLEAN Done Succesfully !$(RESET)"
 

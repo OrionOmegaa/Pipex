@@ -30,45 +30,52 @@ void	exec(char *cmd, char **env)
 	}
 }
 
-int	do_pipe(char **env, char **argv)
+pid_t	do_pipe2(char **env, char **argv, int *p_fd)
 {
 	t_pipe_data	data;
 
-	if (pipe(data.p_fd) == -1)
-		exit(1);
-	data.pid = fork();
-	if (data.pid == -1)
+	data.pid2 = fork();
+	if (data.pid2 == -1)
 		exit(-1);
-	if (!data.pid)
-	{
-		data.fd_in = open_file(argv[1], 0);
-		dup2(data.fd_in, 0);
-		dup2(data.p_fd[1], 1);
-		close(data.p_fd[0]);
-		exec(argv[2], env);
-	}
-	else
+	if (data.pid2 == 0)
 	{
 		data.fd_out = open_file(argv[4], 1);
 		dup2(data.fd_out, 1);
-		dup2(data.p_fd[0], 0);
-		close(data.p_fd[1]);
+		dup2(p_fd[0], 0);
+		close(p_fd[1]);
 		exec(argv[3], env);
 	}
-	return (0);
+	return (data.pid2);
+}
+
+void	do_pipe(char **env, char **argv)
+{
+	t_pipe_data	data;
+	int			p_fd[2];
+
+	if (pipe(p_fd) == -1)
+		exit(1);
+	data.pid1 = fork();
+	if (data.pid1 == -1)
+		exit(-1);
+	if (data.pid1 == 0)
+	{
+		data.fd_in = open_file(argv[1], 0);
+		dup2(data.fd_in, 0);
+		dup2(p_fd[1], 1);
+		close(p_fd[0]);
+		exec(argv[2], env);
+	}
+	data.pid2 = do_pipe2(env, argv, p_fd);
+	close(p_fd[0]);
+	close(p_fd[1]);
+	waitpid(data.pid1, NULL, 0);
+	waitpid(data.pid2, NULL, 0);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	t_pipe_data	data;
-
 	if (argc != 5)
 		exit_handler(1);
-	else
-		data.i = 2;
-	while (data.i++ < 4)
-		data.j = do_pipe(env, argv);
-	while (data.j++ < data.i && \
-			waitpid(data.pid, &data.status, WUNTRACED) != -1)
-		wait(&data.status);
+	do_pipe(env, argv);
 }
