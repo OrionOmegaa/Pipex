@@ -47,7 +47,7 @@ pid_t	do_pipe2(char **env, char **argv, int *p_fd)
 	}
 	return (data.pid2);
 }
-
+#include <stdio.h>
 void	do_pipe(char **env, char **argv)
 {
 	t_pipe_data	data;
@@ -69,8 +69,18 @@ void	do_pipe(char **env, char **argv)
 	data.pid2 = do_pipe2(env, argv, p_fd);
 	close(p_fd[0]);
 	close(p_fd[1]);
-	waitpid(data.pid1, NULL, 0);
-	waitpid(data.pid2, NULL, 0);
+	waitpid(data.pid1, &data.status, 0);
+	if (WIFEXITED(data.status))
+	{
+  		int exit_status = WEXITSTATUS(data.status);
+        printf("Le processus parents est terminé avec le code de sortie : %d\n", exit_status);
+	}
+    waitpid(data.pid2, &data.status, 0);
+	if (WIFEXITED(data.status))
+	{
+  		int exit_status = WEXITSTATUS(data.status);
+        printf("Le processus fils est terminé avec le code de sortie : %d\n", exit_status);
+	}
 }
 
 int	main(int argc, char **argv, char **env)
