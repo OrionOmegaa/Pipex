@@ -47,13 +47,12 @@ pid_t	do_pipe2(char **env, char **argv, int *p_fd)
 	}
 	return (data.pid2);
 }
-#include <stdio.h>
+
 void	do_pipe(char **env, char **argv)
 {
 	t_pipe_data	data;
-	int			p_fd[2];
 
-	if (pipe(p_fd) == -1)
+	if (pipe(data.p_fd) == -1)
 		exit(1);
 	data.pid1 = fork();
 	if (data.pid1 == -1)
@@ -62,25 +61,20 @@ void	do_pipe(char **env, char **argv)
 	{
 		data.fd_in = open_file(argv[1], 0);
 		dup2(data.fd_in, 0);
-		dup2(p_fd[1], 1);
-		close(p_fd[0]);
+		dup2(data.p_fd[1], 1);
+		close(data.p_fd[0]);
 		exec(argv[2], env);
 	}
-	data.pid2 = do_pipe2(env, argv, p_fd);
-	close(p_fd[0]);
-	close(p_fd[1]);
+	data.pid2 = do_pipe2(env, argv, data.p_fd);
+	close(data.p_fd[0]);
+	close(data.p_fd[1]);
 	waitpid(data.pid1, &data.status, 0);
 	if (WIFEXITED(data.status))
-	{
-  		int exit_status = WEXITSTATUS(data.status);
-        printf("Le processus parents est terminé avec le code de sortie : %d\n", exit_status);
-	}
-    waitpid(data.pid2, &data.status, 0);
+		data.exit_status = WEXITSTATUS(data.status);
+	waitpid(data.pid2, &data.status, 0);
 	if (WIFEXITED(data.status))
-	{
-  		int exit_status = WEXITSTATUS(data.status);
-        printf("Le processus fils est terminé avec le code de sortie : %d\n", exit_status);
-	}
+		data.exit_status = WEXITSTATUS(data.status);
+	exit(data.exit_status);
 }
 
 int	main(int argc, char **argv, char **env)

@@ -77,7 +77,7 @@ int	do_pipe(char *cmd, char **env)
 	data.pid = fork();
 	if (data.pid == -1)
 		exit(-1);
-	if (!data.pid)
+	if (data.pid == 0)
 	{
 		dup2(data.p_fd[1], 1);
 		close(data.p_fd[0]);

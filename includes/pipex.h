@@ -41,6 +41,8 @@ typedef struct s_vars
 	int		fd_out;
 	int		status;
 	int		j;
+	int		exit_status;
+	int		p_fd[2];
 	pid_t	pid1;
 	pid_t	pid2;
 }		t_pipe_data;
